@@ -1,0 +1,41 @@
+name: Publish
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build package
+        run: npm run build
+
+      - name: Configure .npmrc in build directory
+        run: |
+          echo "@sambit24795:registry=https://npm.pkg.github.com" > build/.npmrc
+          echo '//npm.pkg.github.com/:_authToken=${NPM_TOKEN_FREELANCE_GIGS_SHARED}' >> build/.npmrc
+
+      - name: Publish to GitHub Packages
+        run: npm publish
+        working-directory: ./build
+        env: 
+          NPM_TOKEN_FREELANCE_GIGS_SHARED: ${{ secrets.GITHUB_TOKEN }}
