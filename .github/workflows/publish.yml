@@ -2,6 +2,7 @@ name: Publish
 
 on:
   push:
+    branches: [main]
     tags: ['v*']         # publish only on version tags
   workflow_dispatch:      # allow manual trigger
 
